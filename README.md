@@ -1,8 +1,6 @@
 # sample weather API React
 Sample_Weather React/Mobx app.
 
-Demo: https://jsdevpro.pl/weather/
-
 ## Installation:
 
 ## Use git clone.
