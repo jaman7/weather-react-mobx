@@ -1,0 +1,25 @@
+// ***********************************
+// VARIABLES
+// ***********************************
+$bg-black: #000 !default;
+$bg-white: #fff !default;
+$bg-dark-white: #e6e6e6 !default;
+$bg-gray: #191c1e !default;
+$colorWhite: #fff !default;
+$colorFontNormal: #212529 !default;
+$colorGray: #ccc !default;
+
+$dark-bg: #222531 !default;
+
+$fontm: Montserrat, sans-serif !default;
+$fontbase: 16px !default;
+
+$container-max-widths: (
+	sm: 540px,
+	md: 720px,
+	lg: 960px,
+	xl: 1200px,
+) !default;
+
+//bootstrap active
+$component-active-bg: $colorGray !default;

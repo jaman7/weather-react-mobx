@@ -1,0 +1,24 @@
+.mapboxgl-control-container {
+	position: relative;
+	z-index: 10;
+	width: 100%;
+	height: auto;
+	display: block;
+
+	& .mapboxgl-ctrl-top-left {
+		pointer-events: initial !important;
+		z-index: 11;
+		height: auto;
+	}
+
+	& .mapboxgl-ctrl {
+		float: none;
+		display: flex;
+		width: fit-content;
+		height: auto;
+	}
+}
+
+.mapboxgl-ctrl-geocoder .suggestions {
+	height: unset;
+}

@@ -1,0 +1,35 @@
+# Logs and databases #
+######################
+*.log
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+bower.json
+build.sh
+karma.conf.js
+
+# Build Systems #
+######################
+node_modules/
+bower_components/
+.vscode/
+.vscode/settings.json
+.sass-cache
+*.css.min.map
+build/
+dist/
+maps/
+/vendor/
+package-lock.json
+composer.lock
+src/css/style.css
+src/css/style.css.map
+yarn.lock

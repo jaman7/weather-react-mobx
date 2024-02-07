@@ -1,0 +1,302 @@
+// ***********************************
+// MIXINS
+// ***********************************
+
+@mixin transition-all($time: 5s) {
+	transition: all $time ease-in-out;
+}
+
+@mixin fade($time: 0.5s) {
+	transition: background-color $time ease-in-out;
+}
+
+@mixin displayflex() {
+	display: flex;
+}
+
+@mixin border-radius($radius) {
+	border-radius: $radius;
+}
+
+@mixin bgcolor($klasa, $ile, $color) {
+	@for $i from 1 through $ile {
+		.#{$klasa}#{$i} {
+			background-color: nth($color, $i);
+		}
+	}
+}
+
+@mixin box-shadow($top, $left, $blur, $spread, $color, $inset: false) {
+	@if $inset {
+		box-shadow: inset $top $left $blur $spread $color;
+	} @else {
+		box-shadow: $top $left $blur $spread $color;
+	}
+}
+
+$xsm: 576px;
+$sm: 768px;
+$md: 992px;
+$lg: 1200px;
+$slg: 1366px;
+$mlg: 1440px;
+$llg: 1600px;
+$xlg: 1920px;
+
+// Predefined Break-points
+
+@function translate-media-condition($c) {
+	$condMap: (
+		"screen": "only screen",
+		"print": "only print",
+		"retina":
+			"(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-device-pixel-ratio: 1.5), (min-resolution: 120dpi)",
+		"maxxlg": "(max-width: #{$xlg})",
+		"minxlg": "(min-width: #{$llg})",
+		"maxllg": "(max-width: #{$llg - 1})",
+		"minllg": "(min-width: #{$mlg})",
+		"maxmlg": "(max-width: #{$mlg - 1})",
+		"minmlg": "(min-width: #{$slg})",
+		"maxslg": "(max-width: #{$slg - 1})",
+		"minslg": "(min-width: #{$lg})",
+		"maxlg": "(max-width: #{$lg - 1})",
+		"minlg": "(min-width: #{$md})",
+		"maxmd": "(max-width: #{$md - 1})",
+		"minmd": "(min-width: #{$sm})",
+		"maxsm": "(max-width: #{$sm - 1})",
+		"minsm": "(min-width: #{$xsm})",
+		"maxxsm": "(max-width: #{$xsm - 1})",
+		"minxsm": "(min-width: 240px)",
+	);
+	@return map-get($condMap, $c);
+}
+
+// The media mixin
+@mixin mediaa($args) {
+	$query: "";
+	@each $arg in $args {
+		$op: "";
+		@if ($query != "") {
+			$op: " and ";
+		}
+		$query: $query + $op + translate-media-condition($arg);
+	}
+	@media #{$query} {
+		@content;
+	}
+}
+
+/// Convert angle
+/// @author Chris Eppstein
+/// @param {Number} $value - Value to convert
+/// @param {String} $unit - Unit to convert to
+/// @return {Number} Converted angle
+@function convert-angle($value, $unit) {
+	$convertable-units: deg grad turn rad;
+	$conversion-factors: 1 (10grad/9deg) (1turn/360deg) (3.1415926rad/180deg);
+
+	@if index($convertable-units, unit($value)) and index($convertable-units, $unit) {
+		@return $value / nth($conversion-factors, index($convertable-units, unit($value))) *
+			nth($conversion-factors, index($convertable-units, $unit));
+	}
+
+	@warn "Cannot convert `#{unit($value)}` to `#{$unit}`.";
+}
+
+/// Test if `$value` is an angle
+/// @param {*} $value - Value to test
+/// @return {Bool}
+@function is-direction($value) {
+	$is-direction: index(
+		(
+			to top,
+			to top right,
+			to right top,
+			to right,
+			to bottom right,
+			to right bottom,
+			to bottom,
+			to bottom left,
+			to left bottom,
+			to left,
+			to left top,
+			to top left
+		),
+		$value
+	);
+	$is-angle: type-of($value) == "number" and index("deg" "grad" "turn" "rad", unit($value));
+
+	@return $is-direction or $is-angle;
+}
+
+/// Convert a direction to legacy syntax
+/// @param {Keyword | Angle} $value - Value to convert
+/// @require {function} is-direction
+/// @require {function} convert-angle
+@function legacy-direction($value) {
+	@if is-direction($value) ==false {
+		@warn "Cannot convert `#{$value}` to legacy syntax because it doesn't seem to be an angle or a direction";
+	}
+
+	$conversion-map: (
+		to top: bottom,
+		to top right: bottom left,
+		to right top: left bottom,
+		to right: left,
+		to bottom right: top left,
+		to right bottom: left top,
+		to bottom: top,
+		to bottom left: top right,
+		to left bottom: right top,
+		to left: right,
+		to left top: right bottom,
+		to top left: bottom right
+	);
+
+	@if map-has-key($conversion-map, $value) {
+		@return map-get($conversion-map, $value);
+	}
+
+	@return 90deg - convert-angle($value, "deg");
+}
+
+/// Mixin printing a linear-gradient
+/// as well as a plain color fallback
+/// and the `-webkit-` prefixed declaration
+/// @access public
+/// @param {String | List | Angle} $direction - Linear gradient direction
+/// @param {Arglist} $color-stops - List of color-stops composing the gradient
+@mixin linear-gradient($direction, $color-stops...) {
+	@if is-direction($direction) ==false {
+		$color-stops: ($direction, $color-stops);
+		$direction: 180deg;
+	}
+
+	background: nth(nth($color-stops, 1), 1);
+	background: -webkit-linear-gradient(legacy-direction($direction), $color-stops);
+	background: linear-gradient($direction, $color-stops);
+}
+
+// mixin animation-delay
+@mixin animation-delay($times...) {
+	animation-delay: $times;
+}
+
+// /*
+//  * Apply a CSS3 transition-property
+//  * @include transitionProperty(opacity);
+//  * @include transitionProperty((height, width)); Multiple properties can be passed in surrounded by brackets
+//  */
+@mixin transition-property($property) {
+	transition-property: $property;
+}
+
+@mixin transform3d($trans) {
+	@include transform($trans, true);
+}
+
+@mixin transform($val) {
+	transform: $val;
+}
+
+// Sass interpolation to make a generic mixin that you can use to set any color attribute:
+@mixin alpha-attribute($attribute, $color, $background) {
+	$percent: alpha($color) * 100%;
+	$opaque: opacify($color, 1);
+	$solid-color: mix($opaque, $background, $percent);
+	#{$attribute}: $solid-color;
+	#{$attribute}: $color;
+}
+
+@mixin fluid-type($min-value: 12px, $max-value: 21px, $properties: "font-size", $min-vw: 320px, $max-vw: 1440px) {
+	@each $property in $properties {
+		#{$property}: $min-value;
+	}
+
+	@media (min-width: $min-vw) {
+		@each $property in $properties {
+			#{$property}: calc(
+				#{$min-value} + #{strip-unit($max-value - $min-value)} * (100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)}
+			);
+		}
+	}
+
+	@media (min-width: $max-vw) {
+		@each $property in $properties {
+			#{$property}: $max-value;
+		}
+	}
+}
+
+@function strip-unit($number) {
+	@if type-of($number) == "number" and not unitless($number) {
+		@return $number / ($number * 0 + 1);
+	}
+
+	@return $number;
+}
+
+@mixin radial-gradient($from, $to) {
+	background: radial-gradient(center, circle cover, $from 0%, $to 100%);
+	background-color: $from;
+}
+
+@mixin center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateZ(0) translate(-50%, -50%);
+}
+
+/// Mixin to customize scrollbars
+/// Beware, this does not work in all browsers
+/// @author Hugo Giraudel
+/// @param {Length} $size - Horizontal scrollbar's height and vertical scrollbar's width
+/// @param {Color} $foreground-color - Scrollbar's color
+/// @param {Color} $background-color [mix($foreground-color, white, 50%)] - Scrollbar's color
+/// @example scss - Scrollbar styling
+///   @include scrollbars(.5em, slategray);
+@mixin scrollbars($size, $foreground-color, $background-color: mix($foreground-color, #fff, 50%)) {
+	// For Google Chrome
+	::-webkit-scrollbar {
+		width: $size;
+		height: $size;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: $foreground-color;
+	}
+
+	::-webkit-scrollbar-track {
+		background: $background-color;
+	}
+
+	// For Internet Explorer
+	body {
+		scrollbar-face-color: $foreground-color;
+		scrollbar-track-color: $background-color;
+	}
+}
+
+//Keyframe Animation Sass Mixins
+
+@mixin animation($animate...) {
+	$max: length($animate);
+	$animations: "";
+
+	@for $i from 1 through $max {
+		$animations: #{$animations + nth($animate, $i)};
+
+		@if $i < $max {
+			$animations: #{$animations + ", "};
+		}
+	}
+
+	animation: $animations;
+}
+
+@mixin keyframes($animationName) {
+	@keyframes #{$animationName} {
+		@content;
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
+	},
+	"require": {
+		"squizlabs/php_codesniffer": "3.*"
+	},
+	"scripts": {
+		"phpcbf": "'vendor/bin/phpcbf' --standard=PSR2 --extensions=php --runtime-set ignore_warnings_on_exit 1 --ignore=src/vendor/ src/",
+		"check": [
+			"@cs-check",
+			"@test"
+		],
+		"cs-check": "phpcs --colors",
+		"cs-fix": "phpcbf --colors",
+		"test": "phpunit --colors=always"
+	}
+}
