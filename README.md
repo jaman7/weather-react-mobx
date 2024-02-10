@@ -15,7 +15,7 @@ npm install
 ## run command
 
 ```
-npm run dev
+gulp
 ```
 
 ## Contributing
