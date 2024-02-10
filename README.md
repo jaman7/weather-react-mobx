@@ -9,13 +9,13 @@ git clone https://github.com/jaman7/Sample_Weather.git
 ```
 ## install
 ```
-yarn install
+npm install
 ```
 
 ## run command
 
 ```
-gulp
+npm run dev
 ```
 
 ## Contributing
